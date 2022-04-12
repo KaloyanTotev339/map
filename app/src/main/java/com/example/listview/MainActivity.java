@@ -127,10 +127,14 @@ public class MainActivity extends AppCompatActivity {
                     if (num == Integer.parseInt(j+""+ i)) {
                         //if the room is buissy we add it to the final list
                         Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
-                        rooms.add(newRoom);
-                        Log.d("room added", "onCreate: " + c.getName());
-                        isOccupied = true;
+                            rooms.add(newRoom);
+
+                            Log.d("room added", "onCreate: " + c.getName());
+                            isOccupied = true;
+
+
                     }
+
                 }
                 if (!isOccupied) {
                     //if the room is not buisy we add an empty room

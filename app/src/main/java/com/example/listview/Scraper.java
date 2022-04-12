@@ -36,6 +36,7 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
     private String courseRoom;
     private String html;
     private String currentDate;
+    private String rowspan;
 
 
 
@@ -63,7 +64,9 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
                        // Log.d("TD", Arrays.asList(td.text().split(" ")).toString());
                         courseDate = tr.select("td.blue").text().split(" ")[1];
                         courseStartTime = tr.select("td.blue").text().split(" ")[2];
+
                         if (courseDate.equals(currentDate)) {
+                            rowspan = td.attr("rowspan").toString();
                             courseAll.removeAll(courseAll);
                             courseAll.addAll(Arrays.asList(td.text().split(" ")));
                             //Log.d( "ALL: ",courseAll.toString());
@@ -85,8 +88,13 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
                             //Log.d( "COURSE_NAME: ",courseName);
                             courseTeacher = courseTeacherTitle + " " + courseTeacherName;
                             //Log.d( "TEACHER_NAME: ",courseTeacher);
+                            String[] splitted = courseStartTime.split("-");
+                            String timeHolder = ""+(Integer.parseInt(splitted[1])
+                                    + Integer.parseInt(rowspan));
+                            courseStartTime =  splitted[0] + "-" + timeHolder;
 
-                                Course entry = new Course(courseName, courseStartTime, courseDate, courseTeacher, courseRoom);
+
+                            Course entry = new Course(courseName, courseStartTime, courseDate, courseTeacher, courseRoom);
                             Log.d("courseEntry", "doInBackground: " + entry.toString());
                                 this.courseList.add(entry);
 
