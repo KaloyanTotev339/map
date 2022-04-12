@@ -1,6 +1,6 @@
 package com.example.listview;
 
-public class Course {
+public class Course implements Comparable{
     private String name;
     private String startTime;
     private String date;
@@ -64,5 +64,11 @@ public class Course {
     @Override
     public String toString(){
         return String.format("[ %s, %s, %s, %s]",getTeacher(),getName(),getRoomNumber(),getDate());
+    }
+
+    @Override
+    public int compareTo(Object c) {
+        int comparage = Integer.parseInt(((Course)c).getRoomNumber());
+        return Integer.parseInt(this.getRoomNumber()) - comparage;
     }
 }

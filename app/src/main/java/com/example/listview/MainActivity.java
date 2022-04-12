@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-        //Collections.sort(rooms);
+        Collections.sort(rooms);
 
 
     }
