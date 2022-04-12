@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Course> removable = new ArrayList<>();
     ArrayList<Course> courseArrayList;
     ListView mListView;
-    boolean flag = true;
+    boolean isSearched = false;
     String sequ;
 
     @Override
@@ -60,21 +60,21 @@ public class MainActivity extends AppCompatActivity {
              @Override
              public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // Toast.makeText(MainActivity.this, "you clicked on: " + personArrayList.get(i).getName(),Toast.LENGTH_SHORT).show();
-                 if(flag) {
+                 if(!isSearched) {
                      Intent intent = new Intent(MainActivity.this, ImageActivity.class);
                      intent.putExtra("roomNumber", rooms.get(i).getRoomNumber());
                  Log.d("onItemClick if: ", rooms.get(i).getRoomNumber());
                      startActivityForResult(intent, 1);
 
                  }else{
-                     for(Course c : courseArrayList){
+                     for(Course c : rooms){
                          Log.d("TAG", "onItemClick: " + c.toString());
                          if(c.getRoomNumber().equals(sequ)){
                              Intent intent = new Intent(MainActivity.this, ImageActivity.class);
                              intent.putExtra("roomNumber", c.getRoomNumber());
                              Log.d("onItemClick: else", c.getRoomNumber());
                              startActivityForResult(intent, 1);
-                             flag = true;
+                             isSearched = false;
                              break;
                          }
                      }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
              @Override
              public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                  (MainActivity.this).adapter.getFilter().filter(charSequence);
-                 flag = false;
+                 isSearched = true;
                  sequ = charSequence.toString();
                  Log.d("onTextChanged:" ,  sequ);
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
              @Override
              public void afterTextChanged(Editable editable) {
-
+                 Log.d("TEXT_CHANGED", "afterTextChanged: ");
              }
          });
 
