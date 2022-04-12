@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
     CourseListAdapter adapter;
     ArrayList<Course> rooms = new ArrayList<>();
+    ArrayList<Course> removable = new ArrayList<>();
     ArrayList<Course> courseArrayList;
     ListView mListView;
     boolean flag = true;
@@ -116,23 +117,25 @@ public class MainActivity extends AppCompatActivity {
         for(int j = 0; j <=4; j++) {
             //generating the list of rooms for the first floor
             for (Integer i = 0; i <= 33; i++) {
+
                 boolean isOccupied = false;
                 //goes through every room that has a lecture in the current day
 
                 for (Course c : courseArrayList) {
-
-                    int num = Integer.parseInt(c.getRoomNumber());
-                    Log.d("roomNumberComparison", num + "<- c.roomNum, i -> " + i);
-                    //check if the room is the same as i
-                    if (num == Integer.parseInt(j+""+ i)) {
-                        //if the room is buissy we add it to the final list
-                        Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
+                    if(!c.getRoomNumber().equals("Онлайн")) {
+                        int num = Integer.parseInt(c.getRoomNumber());
+                        Log.d("roomNumberComparison", num + "<- c.roomNum, i -> " + i);
+                        //check if the room is the same as i
+                        if (num == Integer.parseInt(j + "" + i)) {
+                            //if the room is buissy we add it to the final list
+                            Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
                             rooms.add(newRoom);
 
                             Log.d("room added", "onCreate: " + c.getName());
                             isOccupied = true;
 
 
+                        }
                     }
 
                 }
@@ -140,13 +143,15 @@ public class MainActivity extends AppCompatActivity {
                     //if the room is not buisy we add an empty room
                     rooms.add(new Course("No Course Right Now", "", "", j+"" + i));
 
-                  //  isOccupied = !isOccupied;
+                    isOccupied = !isOccupied;
                 }
 
 
             }
         }
-        Collections.sort(rooms);
+
+
+        //Collections.sort(rooms);
 
 
     }

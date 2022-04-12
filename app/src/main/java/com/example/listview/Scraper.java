@@ -48,20 +48,26 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         Document doc;
-        findWeek();
-        try {
+        String[] sites = {"https://e-services.bfu.bg/common/graphic.php?c=3&o=1&k=4",
+                "https://e-services.bfu.bg/common/graphic.php?c=3&o=1&k=3",
+                "https://e-services.bfu.bg/common/graphic.php?c=3&o=1&k=2",
+                "https://e-services.bfu.bg/common/graphic.php?c=3&o=1&k=1",
+                "https://e-services.bfu.bg/common/graphic.php?c=2&o=1&k=2"};
+        for (String site : sites) {
+            findWeek(site);
+            try {
 
 
                 doc = Jsoup.connect(html).get();
 
                 Elements data2 = doc.select("table");
 
-                for(Element tr : data2.select("tr")){
+                for (Element tr : data2.select("tr")) {
 
-                  //  Log.d("TR", tr.text());
-                    for (Element td : tr.select("td.info")){
+                    //  Log.d("TR", tr.text());
+                    for (Element td : tr.select("td.info")) {
 
-                       // Log.d("TD", Arrays.asList(td.text().split(" ")).toString());
+                        // Log.d("TD", Arrays.asList(td.text().split(" ")).toString());
                         courseDate = tr.select("td.blue").text().split(" ")[1];
                         courseStartTime = tr.select("td.blue").text().split(" ")[2];
 
@@ -71,33 +77,32 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
                             courseAll.addAll(Arrays.asList(td.text().split(" ")));
                             //Log.d( "ALL: ",courseAll.toString());
 
-                            if(courseAll.get(courseAll.size()-1).equals("лекции")) {
-                                courseAll.remove(courseAll.size()-1);
+                            if (courseAll.get(courseAll.size() - 1).equals("лекции")) {
+                                courseAll.remove(courseAll.size() - 1);
                             }
-                                courseRoom = courseAll.get(courseAll.size() - 1);
-                                courseAll.remove(courseRoom);
-                                courseTeacherTitle = courseAll.get(courseAll.size()-2);
+                            courseRoom = courseAll.get(courseAll.size() - 1);
+                            courseAll.remove(courseRoom);
+                            courseTeacherTitle = courseAll.get(courseAll.size() - 2);
 
-                           // Log.d( "ROOM_NUMBER: ",courseRoom);
+                            // Log.d( "ROOM_NUMBER: ",courseRoom);
 
-                            courseTeacherName =  courseAll.get(courseAll.size()-1);
+                            courseTeacherName = courseAll.get(courseAll.size() - 1);
 
                             courseAll.remove(courseTeacherTitle);
                             courseAll.remove(courseTeacherName);
-                            courseName =String.join(" ",courseAll );
+                            courseName = String.join(" ", courseAll);
                             //Log.d( "COURSE_NAME: ",courseName);
                             courseTeacher = courseTeacherTitle + " " + courseTeacherName;
                             //Log.d( "TEACHER_NAME: ",courseTeacher);
                             String[] splitted = courseStartTime.split("-");
-                            String timeHolder = ""+(Integer.parseInt(splitted[1])
+                            String timeHolder = "" + (Integer.parseInt(splitted[1])
                                     + Integer.parseInt(rowspan));
-                            courseStartTime =  splitted[0] + "-" + timeHolder;
+                            courseStartTime = splitted[0] + "-" + timeHolder;
 
 
                             Course entry = new Course(courseName, courseStartTime, courseDate, courseTeacher, courseRoom);
                             Log.d("courseEntry", "doInBackground: " + entry.toString());
-                                this.courseList.add(entry);
-
+                            this.courseList.add(entry);
 
 
                         }
@@ -107,12 +112,13 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
                 }
 
 
-            }  catch (IOException ioException) {
+            } catch (IOException ioException) {
                 ioException.printStackTrace();
-               }
+            }
+        }
+            Log.d("onExecute", "getCourseList: " + courseList.size());
+            return null;
 
-        Log.d("onExecute", "getCourseList: " + courseList.size());
-        return null;
     }
 
     @Override
@@ -120,13 +126,13 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
 
     }
 
-    private void findWeek(){
+    private void findWeek(String site){
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM");
         currentDate = formatter.format(calendar.getTime());
         try {
-            Document document = Jsoup.connect("https://e-services.bfu.bg/common/graphic.php?c=3&o=1&k=4").get();
+            Document document = Jsoup.connect(site).get();
             Elements links = document.select("a[href]");
 
             for(Element e : links){
