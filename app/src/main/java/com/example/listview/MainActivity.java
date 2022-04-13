@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateRooms() {
 
+        ArrayList<String> doubledRooms = new ArrayList<>();
+        boolean isAdded = false;
         for(int j = 0; j <=4; j++) {
             //generating the list of rooms for the first floor
             for (Integer i = 0; i <= 33; i++) {
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 //and checks if it is the same room
 
                 for (Course c : courseArrayList) {
+                    isAdded=false;
                     if(!c.getRoomNumber().equals("Онлайн")) {
                         int num = Integer.parseInt(c.getRoomNumber());
                         Log.d("roomNumberComparison", num + "<- c.roomNum, i -> " + i);
@@ -130,13 +133,19 @@ public class MainActivity extends AppCompatActivity {
                         if (num == Integer.parseInt(j + "" + i)) {
                             //if the room is busy the user add it to the final list
                             Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
+                            for(String rn : doubledRooms){
+                                if(rn.equals(c.getRoomNumber())){
+                                    isAdded = true;
 
-                            rooms.add(newRoom);
-                            courseArrayList.remove(newRoom);
-                            Log.d("room added", "onCreate: " + c.getName());
-                            isOccupied = true;
-
-
+                                }
+                            }
+                            if(!isAdded) {
+                                rooms.add(newRoom);
+                                doubledRooms.add(newRoom.getRoomNumber());
+                                courseArrayList.remove(newRoom);
+                                Log.d("room added", "onCreate: " + c.getName());
+                                isOccupied = true;
+                            }
                         }
                     }
 
