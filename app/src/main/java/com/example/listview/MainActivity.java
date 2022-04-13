@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         courseArrayList = sc.getCourseList();
 
         //generate all the rooms
-        generateRooms();
+        generateRooms2();
         //find the list view and add the custom list adapter to it
         mListView =  (ListView) findViewById(R.id.theList);
         adapter = new CourseListAdapter(this, R.layout.item_layout,rooms);
@@ -99,8 +99,6 @@ public class MainActivity extends AppCompatActivity {
                  if(sequ.length() < 1){
                      isSearched=false;
                  }
-
-
              }
 
              @Override
@@ -128,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     isAdded=false;
                     if(!c.getRoomNumber().equals("Онлайн")) {
                         int num = Integer.parseInt(c.getRoomNumber());
-                        Log.d("roomNumberComparison", num + "<- c.roomNum, i -> " + i);
+                        Log.d("roomNumberComparison", num + "<- c.roomNum, ji -> " + j + i );
                         //check if the room is the same as i
                         if (num == Integer.parseInt(j + "" + i)) {
                             //if the room is busy the user add it to the final list
@@ -136,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                             for(String rn : doubledRooms){
                                 if(rn.equals(c.getRoomNumber())){
                                     isAdded = true;
-
                                 }
                             }
                             if(!isAdded) {
@@ -156,13 +153,49 @@ public class MainActivity extends AppCompatActivity {
 
                     isOccupied = !isOccupied;
                 }
-
-
             }
         }
 
+    }
 
+    public void generateRooms2(){
+        ArrayList<Course> removable = new ArrayList<>();
+        ArrayList<Course> addable = new ArrayList<>();
+        boolean isAdded = false;
+        for (Integer i = 0; i <= 33; i++) {
+            rooms.add(new Course("No Course Right Now", "", "", "",""+i,"1"));
+
+        }
+        for(int j = 0; j <=4; j++) {
+            //generating the list of rooms for the first floor
+            if(j !=1) {
+                for (Integer i = 0; i <= 33; i++) {
+                    rooms.add(new Course("No Course Right Now", "", "", "", j + "" + i,j+""));
+
+                }
+            }
+        }
+
+        for(Course emptyRoom : rooms){
+            for(Course fullRoom : courseArrayList){
+                Log.d("repeat test", emptyRoom.getRoomNumber()+"<-emptyRoom, fullRoom->"+fullRoom.getRoomNumber());
+                isAdded = false;
+                if(emptyRoom.getRoomNumber().equals(fullRoom.getRoomNumber())){
+                    for(Course room : addable){
+                        if(room.getRoomNumber().equals(fullRoom.getRoomNumber())){
+                            isAdded=true;
+                        }
+                    }
+                    if(!isAdded) {
+                        removable.add(emptyRoom);
+                        addable.add(fullRoom);
+                    }
+                }
+            }
+        }
         //Collections.sort(rooms);
+        rooms.removeAll(removable);
+        rooms.addAll(addable);
 
 
     }
