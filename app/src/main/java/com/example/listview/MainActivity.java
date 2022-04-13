@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
     CourseListAdapter adapter;
     ArrayList<Course> rooms = new ArrayList<>();
-    ArrayList<Course> removable = new ArrayList<>();
     ArrayList<Course> courseArrayList;
     ListView mListView;
     boolean isSearched = false;
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        adapter = new CourseListAdapter(this, R.layout.item_layout,rooms );
+        adapter = new CourseListAdapter(this, R.layout.item_layout,rooms);
          mListView.setAdapter(adapter);
 
          mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -129,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         if (num == Integer.parseInt(j + "" + i)) {
                             //if the room is buissy we add it to the final list
                             Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
+
                             rooms.add(newRoom);
 
                             Log.d("room added", "onCreate: " + c.getName());
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
+        
         //Collections.sort(rooms);
 
 
