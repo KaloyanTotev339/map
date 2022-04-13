@@ -178,11 +178,13 @@ public class MainActivity extends AppCompatActivity {
 
         for(Course emptyRoom : rooms){
             for(Course fullRoom : courseArrayList){
-                Log.d("repeat test", emptyRoom.getRoomNumber()+"<-emptyRoom, fullRoom->"+fullRoom.getRoomNumber());
+                //Log.d("repeat test", emptyRoom.getRoomNumber()+"<-emptyRoom, fullRoom->"+fullRoom.getRoomNumber());
                 isAdded = false;
                 if(emptyRoom.getRoomNumber().equals(fullRoom.getRoomNumber())){
                     for(Course room : addable){
                         if(room.getRoomNumber().equals(fullRoom.getRoomNumber())){
+                            Log.d("TAG", "generateRooms2: "+room.getStartTime().split("-")[0]);
+                            if(room.getStartTime().split("-")[0].equals(fullRoom.getStartTime().split("-")[0]))
                             isAdded=true;
                         }
                     }
