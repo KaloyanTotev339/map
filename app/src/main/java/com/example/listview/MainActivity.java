@@ -2,7 +2,10 @@ package com.example.listview;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,23 +34,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d( "TAG", "onPreExecute: ");
-        Scraper sc = new Scraper();
-        //execute the onBackground method and use .get() to wait for it to finish
-        //otherwise it will not load the courses in time
-        try {
-            sc.execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        if(checkConnection()) {
+            Log.d("TAG", "onPreExecute: ");
+            Scraper sc = new Scraper();
+            //execute the onBackground method and use .get() to wait for it to finish
+            //otherwise it will not load the courses in time
+            try {
+                sc.execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //load the active courses of the current day
+            courseArrayList = sc.getCourseList();
+
+            //generate all the rooms
+            generateRooms2();
+        }else{
+            generateEmptyRooms();
         }
-
-        //load the active courses of the current day
-        courseArrayList = sc.getCourseList();
-
-        //generate all the rooms
-        generateRooms2();
         //find the list view and add the custom list adapter to it
         mListView =  (ListView) findViewById(R.id.theList);
         adapter = new CourseListAdapter(this, R.layout.item_layout,rooms);
@@ -108,6 +116,22 @@ public class MainActivity extends AppCompatActivity {
          });
 
 
+    }
+
+    private void generateEmptyRooms() {
+        for (Integer i = 0; i <= 33; i++) {
+            rooms.add(new Course("No Course Right Now", "", "", "",""+i,"1"));
+
+        }
+        for(int j = 0; j <=4; j++) {
+            //generating the list of rooms for the first floor
+            if(j !=1) {
+                for (Integer i = 0; i <= 33; i++) {
+                    rooms.add(new Course("No Course Right Now", "", "", "", j + "" + i,j+""));
+
+                }
+            }
+        }
     }
 
     private void generateRooms() {
@@ -178,12 +202,11 @@ public class MainActivity extends AppCompatActivity {
 
         for(Course emptyRoom : rooms){
             for(Course fullRoom : courseArrayList){
-                //Log.d("repeat test", emptyRoom.getRoomNumber()+"<-emptyRoom, fullRoom->"+fullRoom.getRoomNumber());
+                Log.d("repeat test", emptyRoom.getRoomNumber()+"<-emptyRoom, fullRoom->"+fullRoom.getRoomNumber());
                 isAdded = false;
                 if(emptyRoom.getRoomNumber().equals(fullRoom.getRoomNumber())){
                     for(Course room : addable){
                         if(room.getRoomNumber().equals(fullRoom.getRoomNumber())){
-                            Log.d("TAG", "generateRooms2: "+room.getStartTime().split("-")[0]);
                             if(room.getStartTime().split("-")[0].equals(fullRoom.getStartTime().split("-")[0]))
                             isAdded=true;
                         }
@@ -198,8 +221,21 @@ public class MainActivity extends AppCompatActivity {
         //Collections.sort(rooms);
         rooms.removeAll(removable);
         rooms.addAll(addable);
+        Collections.reverse(rooms);
 
 
+
+    }
+
+    public boolean checkConnection(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+
+        if(ni != null ) {
+            if(ni.isConnected()){
+                return true;
+            }else return false;
+        }else return false;
     }
 
 }
