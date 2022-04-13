@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d( "TAG", "onPreExecute: ");
         Scraper sc = new Scraper();
         //execute the onBackground method and use .get() to wait for it to finish
+        //otherwise it will not load the courses in time
         try {
             sc.execute().get();
         } catch (ExecutionException e) {
@@ -42,38 +43,34 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-        mListView =  (ListView) findViewById(R.id.theList);
+        //load the active courses of the current day
         courseArrayList = sc.getCourseList();
 
-
+        //generate all the rooms
         generateRooms();
-
-
-
-
+        //find the list view and add the custom list adapter to it
+        mListView =  (ListView) findViewById(R.id.theList);
         adapter = new CourseListAdapter(this, R.layout.item_layout,rooms);
-         mListView.setAdapter(adapter);
+        mListView.setAdapter(adapter);
 
+         // "button"-like ability for when an item is clicked
          mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
              @Override
              public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Toast.makeText(MainActivity.this, "you clicked on: " + personArrayList.get(i).getName(),Toast.LENGTH_SHORT).show();
+                //if there is no search in the searchbar, the user find the room by it's number in the arrayList
                  if(!isSearched) {
                      Intent intent = new Intent(MainActivity.this, ImageActivity.class);
                      intent.putExtra("roomNumber", rooms.get(i).getRoomNumber());
-                 Log.d("onItemClick if: ", rooms.get(i).getRoomNumber());
                      startActivityForResult(intent, 1);
-
+                  // else the user find the room by it's roomNumber, otherwise the it's number on the list
+                  //won't corespond to the real item the user clicked
                  }else{
                      for(Course c : rooms){
-                         Log.d("TAG", "onItemClick: " + c.toString());
                          if(c.getRoomNumber().equals(sequ)){
                              Intent intent = new Intent(MainActivity.this, ImageActivity.class);
                              intent.putExtra("roomNumber", c.getRoomNumber());
-                             Log.d("onItemClick: else", c.getRoomNumber());
                              startActivityForResult(intent, 1);
-                             isSearched = false;
+
                              break;
                          }
                      }
@@ -95,16 +92,20 @@ public class MainActivity extends AppCompatActivity {
              @Override
              public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                  (MainActivity.this).adapter.getFilter().filter(charSequence);
+                 //used and explained in "onItemClicked()
                  isSearched = true;
                  sequ = charSequence.toString();
-                 Log.d("onTextChanged:" ,  sequ);
+                 //if the search text is deleted then go back to normal select
+                 if(sequ.length() < 1){
+                     isSearched=false;
+                 }
 
 
              }
 
              @Override
              public void afterTextChanged(Editable editable) {
-                 Log.d("TEXT_CHANGED", "afterTextChanged: ");
+
              }
          });
 
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                 boolean isOccupied = false;
                 //goes through every room that has a lecture in the current day
+                //and checks if it is the same room
 
                 for (Course c : courseArrayList) {
                     if(!c.getRoomNumber().equals("Онлайн")) {
@@ -126,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("roomNumberComparison", num + "<- c.roomNum, i -> " + i);
                         //check if the room is the same as i
                         if (num == Integer.parseInt(j + "" + i)) {
-                            //if the room is buissy we add it to the final list
+                            //if the room is busy the user add it to the final list
                             Course newRoom = new Course(c.getName(), c.getStartTime(), c.getTeacher(), "" + c.getRoomNumber());
 
                             rooms.add(newRoom);
-
+                            courseArrayList.remove(newRoom);
                             Log.d("room added", "onCreate: " + c.getName());
                             isOccupied = true;
 
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if (!isOccupied) {
-                    //if the room is not buisy we add an empty room
+                    //if the room is not buisy the user add an empty room
                     rooms.add(new Course("No Course Right Now", "", "", j+"" + i));
 
                     isOccupied = !isOccupied;
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        
+
         //Collections.sort(rooms);
 
 

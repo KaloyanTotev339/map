@@ -91,8 +91,8 @@ public class Scraper extends AsyncTask<Void,Void,Void> {
                             courseAll.remove(courseTeacherTitle);
                             courseAll.remove(courseTeacherName);
 
-                            //what we are left with is the course name.
-                            //We join the remaining strings into a single one.
+                            //what the user are left with is the course name.
+                            //then join the remaining strings into a single one.
                             courseName = String.join(" ", courseAll);
 
                             //extract the course start time and replace the end time
